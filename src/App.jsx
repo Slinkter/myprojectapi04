@@ -1,84 +1,82 @@
 import React, { useEffect, useState } from "react";
-import { List, ListItem, Card } from "@material-tailwind/react";
+import { List, ListItem, Card, Typography } from "@material-tailwind/react";
 import { Input } from "@material-tailwind/react";
 
 const api_url = "https://jsonplaceholder.typicode.com/users";
 
 const App = () => {
-  const [originalUsers, setOriginalUsers] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [textInput, setTextInput] = useState("");
+    const [originalUsers, setOriginalUsers] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [textInput, setTextInput] = useState("");
 
-  const getUsers = async () => {
-    try {
-      const res = await fetch(api_url);
-      const data = await res.json();
-      setOriginalUsers(data);
-      setUsers(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data from API:", error);
-    }
-  };
+    useEffect(() => {
+        const getUsers = async () => {
+            try {
+                const res = await fetch(api_url);
+                const data = await res.json();
+                setOriginalUsers(data);
+                setUsers(data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching data from API:", error);
+            }
+        };
+        getUsers();
+    }, []);
 
-  useEffect(() => {
-    getUsers();
-  }, []);
-  /* parte 2 :  */
-  const handleSearch = () => {
-    const filteredUsers = originalUsers.filter((user) =>
-      Object.values(user).join().toLowerCase().includes(textInput.toLowerCase())
-    );
-    console.log("filter  :", filteredUsers);
-    setUsers(filteredUsers);
-  };
+    useEffect(() => {
+        const handleSearch = () => {
+            const filteredUsers = originalUsers.filter((user) =>
+                Object.values(user)
+                    .join()
+                    .toLowerCase()
+                    .includes(textInput.toLowerCase())
+            );
+            setUsers(filteredUsers);
+        };
+        handleSearch();
+    }, [textInput, originalUsers]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [textInput, originalUsers]);
+    /*  */
+    const renderUsers = () => {
+        if (loading) {
+            return <div className="p-5">Loading....</div>;
+        }
+        if (users.length === 0) {
+            return <div className="p-5">no hay datos....</div>;
+        }
+        return (
+            <List>
+                {users.map((user) => (
+                    <ComponentRenderUser key={user.id} usuario={user} />
+                ))}
+            </List>
+        );
+    };
 
-  /* parte 3 : Validacion  */
-  const renderUsers = () => {
-    if (loading) {
-      return <div className="p-5">Loading....</div>;
-    }
-    if (users.length === 0) {
-      return <div className="p-5">no hay datos....</div>;
-    }
     return (
-      <List>
-        {users.map((user) => (
-          <ComponentRenderUser usuario={user} key={user.id} />
-        ))}
-      </List>
+        <div className="min-h-dvh w-screen flex flex-col justify-start items-center  gap-6 p-12 bg-red-100 sm:bg-yellow-300 md:bg-blue-gray-600 lg:bg-gray-100">
+            <div className="w-5/6 md:w-1/2">
+                <Input
+                    label="nombre"
+                    onChange={(e) => setTextInput(e.target.value)}
+                />
+            </div>
+            <div className="w-5/6 md:w-1/2">
+                <Card>{renderUsers()}</Card>
+            </div>
+        </div>
     );
-  };
-
-  return (
-    <div className="flex flex-col justify-center items-center min-h-dvh w-screen sm:bg-yellow-300 md:bg-blue-gray-600 bg-blue-gray-600">
-      <div className="w-3/4 sm:w-3/4 md:w-2/4 h-full m-5">
-        <Input
-          label="nombre"
-          color="white"
-          onChange={(e) => setTextInput(e.target.value)}
-        />
-        <br />
-        <Card>{renderUsers()}</Card>
-      </div>
-    </div>
-  );
 };
 
 const ComponentRenderUser = ({ usuario }) => {
-  return (
-    <div>
-      <ListItem className="flex flex-col justify-center items-center">
-        <h3>{usuario.name}</h3>
-        <p>{usuario.email}</p>
-      </ListItem>
-    </div>
-  );
+    return (
+        <ListItem className="flex flex-col justify-center items-center">
+            <Typography variant="h5">{usuario.name}</Typography>
+            <code>{usuario.email}</code>
+        </ListItem>
+    );
 };
 
 export default App;
