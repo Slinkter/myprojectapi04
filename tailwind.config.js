@@ -1,14 +1,14 @@
-const withMT = require("@material-tailwind/react/utils/withMT");
+const { fontFamily } = require("tailwindcss/defaultTheme");
 
-module.exports = withMT({
-  content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
-    "path-to-your-node_modules/@material-tailwind/react/components/**/*.{js,ts,jsx,tsx}",
-    "path-to-your-node_modules/@material-tailwind/react/theme/components/**/*.{js,ts,jsx,tsx}",
-  ],
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Inter", ...fontFamily.sans],
+      },
+    },
   },
-  plugins: [],
-});
+  plugins: [require("tailwindcss-animate")],
+};

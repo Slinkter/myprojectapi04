@@ -1,15 +1,19 @@
-import UsersPage from "./features/users/UsersPage";
+import React, { Suspense } from "react";
+import MainLayout from "./components/ui/MainLayout";
+import UserListSkeleton from "./components/ui/skeletons/UserListSkeleton";
+
+const UsersPage = React.lazy(() => import("./features/users/UsersPage"));
 
 const App = () => {
     return (
-        <div className="containerStyle">
-            <div className="w-full md:w-3/4">
-                <h1 className="text-3xl font-bold mb-6 text-center text-gray-700">
-                    Buscador de Usuarios con Redux
-                </h1>
+        <MainLayout>
+            <h1 className="text-4xl font-bold mb-8 text-center text-gray-800 tracking-tight">
+                Buscador de Usuarios
+            </h1>
+            <Suspense fallback={<UserListSkeleton />}>
                 <UsersPage />
-            </div>
-        </div>
+            </Suspense>
+        </MainLayout>
     );
 };
 
