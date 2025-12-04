@@ -1,13 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/Card";
 
 const UserListItem = ({ user }) => {
     return (
-        <Card className="transition-all hover:scale-[1.02] hover:shadow-lg animate-in fade-in-50">
+        <Card className="card--hoverable">
             <CardHeader>
                 <CardTitle>{user?.name}</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-gray-600">{user?.email}</p>
+                <p className="card__text-content">{user?.email}</p>
             </CardContent>
         </Card>
     );

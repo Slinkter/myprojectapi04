@@ -4,7 +4,7 @@ const Card = ({ className, children }) => {
     return (
         <div
             className={cn(
-                "rounded-lg border bg-card text-card-foreground shadow-sm",
+                "card",
                 className
             )}
         >
@@ -14,21 +14,21 @@ const Card = ({ className, children }) => {
 };
 
 const CardHeader = ({ className, children }) => (
-    <div className={cn("flex flex-col space-y-1.5 p-6", className)}>{children}</div>
+    <div className={cn("card__header", className)}>{children}</div>
 );
 
 const CardTitle = ({ className, children }) => (
-    <h3 className={cn("text-2xl font-semibold leading-none tracking-tight", className)}>
+    <h3 className={cn("card__title", className)}>
         {children}
     </h3>
 );
 
 const CardDescription = ({ className, children }) => (
-    <p className={cn("text-sm text-muted-foreground", className)}>{children}</p>
+    <p className={cn("card__description", className)}>{children}</p>
 );
 
 const CardContent = ({ className, children }) => (
-    <div className={cn("p-6 pt-0", className)}>{children}</div>
+    <div className={cn("card__content", className)}>{children}</div>
 );
 
 export { Card, CardHeader, CardTitle, CardDescription, CardContent };

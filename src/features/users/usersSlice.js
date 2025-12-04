@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { getUsers } from "../../services/users.service";
 
 const usersSlice = createSlice({
     name: "users",
@@ -10,7 +11,7 @@ const usersSlice = createSlice({
     reducers: {},
     extraReducers(builder) {
         builder
-            .addCase(fetchUsers.pending, (state, action) => {
+            .addCase(fetchUsers.pending, (state) => {
                 state.status = "loading";
             })
             .addCase(fetchUsers.fulfilled, (state, action) => {
@@ -25,14 +26,11 @@ const usersSlice = createSlice({
 });
 
 export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
-    const api_url = "https://jsonplaceholder.typicode.com/users";
-    const response = await fetch(api_url);
-    const data = await response.json();
-    return data;
+    return await getUsers();
 });
 
 export const selectAllUsers = (state) => state.users.users;
 export const getUsersStatus = (state) => state.users.status;
 export const getUsersError = (state) => state.users.error;
-console.log(usersSlice.getInitialState());
+
 export default usersSlice.reducer;

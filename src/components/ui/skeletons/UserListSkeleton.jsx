@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from "../Card";
 
 const UserListSkeleton = ({ count = 10 }) => {
     return (
-        <div className="space-y-4">
+        <div className="skeleton-list">
             {Array.from({ length: count }).map((_, i) => (
                 <UserSkeletonItem key={i} />
             ))}
@@ -11,7 +11,7 @@ const UserListSkeleton = ({ count = 10 }) => {
 };
 
 const UserSkeletonItem = () => (
-    <Card className="w-full max-w-sm mx-auto my-2">
+    <Card className="skeleton-card">
         <CardHeader>
             <Skeleton className="h-6 w-3/4" />
         </CardHeader>
@@ -23,7 +23,7 @@ const UserSkeletonItem = () => (
 
 const Skeleton = ({ className, ...props }) => (
     <div
-        className={`animate-pulse rounded-md bg-gray-200 ${className}`}
+        className={`skeleton-loader ${className}`}
         {...props}
     />
 );
