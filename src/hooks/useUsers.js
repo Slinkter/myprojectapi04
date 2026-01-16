@@ -1,67 +1,54 @@
-import { useState, useEffect, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+/**
+ * @file Custom hook para gestionar la lógica de la página de usuarios.
+ * @author Slinkter
+ */
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
-    selectAllUsers,
-    getUsersStatus,
-    fetchUsers,
-} from "../features/users/usersSlice";
+  fetchUsers,
+  getUsersStatus,
+  getSearchTerm,
+  setSearchTerm,
+  selectFilteredUsers,
+} from '@/features/users/usersSlice';
 
+/**
+ * Hook personalizado para encapsular la lógica de obtención y filtrado de usuarios.
+ *
+ * @returns {object} - Un objeto que contiene:
+ * - `users`: La lista de usuarios filtrada.
+ * - `status`: El estado de la carga de datos ('idle', 'loading', 'succeeded', 'failed').
+ * - `searchTerm`: El término de búsqueda actual.
+ * - `handleSearch`: Función para manejar los cambios en el input de búsqueda.
+ */
 export const useUsers = () => {
-    // Estado local para manejar el texto del input de búsqueda.
-    const [textInput, setTextInput] = useState("");
+  // Selecciona datos del store de Redux utilizando selectores memoizados.
+  const users = useSelector(selectFilteredUsers);
+  const status = useSelector(getUsersStatus);
+  const searchTerm = useSelector(getSearchTerm);
+  //
+  const dispatch = useDispatch();
 
-    // --- PASO 1 y 5: Selección de datos del Store de Redux ---
-    // `useSelector` se suscribe al store de Redux.
-    // 1. En la carga inicial, `selectAllUsers` devuelve el valor inicial del slice: un array vacío [].
-    // 5. Después de que el fetch es exitoso (ver PASO 4), Redux notifica a este componente.
-    //    `useSelector` se vuelve a ejecutar y ahora `selectAllUsers` devuelve la lista completa de usuarios.
-    //    Esto provoca una re-renderización con los datos.
-    const originalUsers = useSelector(selectAllUsers);
+  // Dispara la carga inicial de usuarios si no se han cargado todavía.
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchUsers());
+    }
+  }, [status, dispatch]);
 
-    // Se suscribe al estado de la petición (inicialmente "idle", luego "loading", y finalmente "succeeded" o "failed").
-    const usersStatus = useSelector(getUsersStatus);
+  /**
+   * Maneja el cambio en el input de búsqueda, despachando la acción para actualizar el store.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - El evento de cambio del input.
+   */
+  const handleSearch = (e) => {
+    dispatch(setSearchTerm(e.target.value));
+  };
 
-    // `dispatch` es la función que usamos para enviar acciones a Redux.
-    const dispatch = useDispatch();
-
-    // --- PASO 2: Disparar la carga de datos ---
-    // `useEffect` se ejecuta después de que el componente se renderiza.
-    useEffect(() => {
-        // Solo queremos buscar los datos una vez, cuando el estado es "idle" (inactivo).
-        // Esto previene que se hagan llamadas a la API en cada re-renderizado.
-        if (usersStatus === "idle") {
-            // --- PASO 3: Iniciar el proceso asíncrono ---
-            // Despachamos la acción `fetchUsers`. Esto NO actualiza los usuarios directamente.
-            // Redux Toolkit ejecuta el "thunk" `fetchUsers`, que a su vez:
-            // a) Despacha la acción `pending`, cambiando el `usersStatus` a "loading".
-            // b) Realiza la llamada a la API.
-            // c) Cuando la API responde, despacha la acción `fulfilled` con los datos (ver PASO 4).
-            dispatch(fetchUsers());
-        }
-    }, [usersStatus, dispatch]);
-
-    // --- PASO 4 (implícito) y Optimización ---
-    // El `extraReducer` en `usersSlice.js` escucha la acción `fetchUsers.fulfilled`.
-    // Cuando la recibe, actualiza el estado del slice, guardando los usuarios en `state.users`.
-    // Este cambio en el store es lo que hace que `originalUsers` reciba los datos en el PASO 5.
-
-    // `useMemo` se usa para optimización. Solo recalcula `filteredUsers` si `textInput` u `originalUsers` cambian.
-    // Esto evita filtrar la lista en cada re-renderizado si no es necesario.
-    const filteredUsers = useMemo(() => {
-        if (!textInput) {
-            return originalUsers;
-        }
-        return originalUsers.filter((user) => {
-            const searchText = textInput.toLowerCase();
-            return user.name.toLowerCase().includes(searchText);
-        });
-    }, [textInput, originalUsers]);
-
-    // El hook devuelve los datos filtrados, el estado de la carga y los manejadores del input.
-    return {
-        users: filteredUsers,
-        status: usersStatus,
-        textInput,
-        setTextInput,
-    };
+  // Devuelve el estado y las funciones necesarias para la UI.
+  return {
+    users,
+    status,
+    searchTerm,
+    handleSearch,
+  };
 };
